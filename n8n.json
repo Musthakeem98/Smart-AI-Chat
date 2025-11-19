@@ -1,0 +1,484 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        32
+      ],
+      "id": "31e8f9bc-2c70-476e-a760-f2285e3a04ff",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "u8T1ZRLyh3wv13Yl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        32
+      ],
+      "id": "d12fa04f-11ba-45ad-9a08-0c4796eb55f8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -432,
+        320
+      ],
+      "id": "5ea7fc91-b9fc-416f-b670-ce6ffda9e5c9",
+      "name": "Webhook",
+      "webhookId": "1fd76302-8375-4b0e-b7d1-e956eb860362",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      type: $input.first().json.body.type,\n      chatInput: $input.first().json.body.message\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        320
+      ],
+      "id": "56f70116-b996-4a54-8903-0f498a204744",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "city",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "79321ab6-6ff2-4280-b5b8-0e1426393702"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "city"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "db4e2eb8-497a-453f-be68-70a49c76a289",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "health",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "health"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eaa56d17-eab1-4904-b4c7-934145a89dab",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "energy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "energy"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        16,
+        304
+      ],
+      "id": "1731055e-045c-4dac-8da3-8c29b5e54303",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Provide comprehensive insights about Dubai as a smart city, including:\n            1. Key smart city initiatives\n            2. Infrastructure highlights\n            3. Economic strengths\n            4. Tourism and lifestyle\n            5. Future development plans\n            \n            Keep the response informative and engaging.\n\n Provide your response in Markdown format. Do not insert line breaks manually; keep all text in continuous lines. Always consider previous chats and the current user message when responding.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        240,
+        -192
+      ],
+      "id": "64d31537-88a7-42bd-b2b5-934bf88e59d4",
+      "name": "City-View Agent",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        432
+      ],
+      "id": "0f1126d1-c8b7-4828-beca-2f58c4b27224",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI assistant. Provide your response in Markdown format. Do not insert line breaks manually; keep all text in continuous lines. Always consider previous chats and the current user message when responding.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        240,
+        208
+      ],
+      "id": "c1c9e6a3-81fb-4a9c-9fa1-955903576e5c",
+      "name": "Health Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI assistant. Provide your response in Markdown format. Do not insert line breaks manually; keep all text in continuous lines. Always consider previous chats and the current user message when responding.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        240,
+        720
+      ],
+      "id": "3bd20c00-9e56-4c02-8ee4-114a6af06681",
+      "name": "Energy Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        944
+      ],
+      "id": "64d6641d-a10f-4bee-ba80-365d23ac26bb",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "u8T1ZRLyh3wv13Yl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        944
+      ],
+      "id": "125d9841-fc86-4b11-8679-ad8f35af31fa",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        432
+      ],
+      "id": "2c891d17-4295-409e-a6a5-c0b69886a3fd",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "u8T1ZRLyh3wv13Yl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function escapeForJSON(text) {\n  // Escape backslashes first\n  let escaped = text.replace(/\\\\/g, \"\\\\\\\\\");\n  \n  // Escape double quotes\n  escaped = escaped.replace(/\"/g, '\\\\\"');\n\n  // Convert real line breaks to \\n\n  escaped = escaped.replace(/\\r?\\n/g, \"\\\\n\");\n\n  return escaped.trim();\n}\n\n// Get input from previous node\nconst inputText = $input.first().json.output;\n\n// Format it for safe JSON\nconst formatted = escapeForJSON(inputText);\n\n// Return as n8n item\nreturn [\n  {\n    json: {\n      output: formatted\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        320
+      ],
+      "id": "90d84076-d794-4ec5-bb88-8cdab8a5f1a3",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"output\": \"{{ $json.output }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        816,
+        320
+      ],
+      "id": "e508f13f-8ff1-414f-a1c0-a164ca4032c9",
+      "name": "Respond to web-hook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "City-View Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "City-View Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "City-View Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Health Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Energy Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "City-View Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Health Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Energy Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Energy Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Energy Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Health Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to web-hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Colombo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false,
+    "errorWorkflow": "JlwGdJDRuDAqK1H8"
+  },
+  "versionId": "dde05f1d-a4ea-4853-b435-01ef5ef75233",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fe821c3ca81c1aaf9501cc53bb3dba339eb8c9fa719b01463324abd3be8900c4"
+  },
+  "id": "JlwGdJDRuDAqK1H8",
+  "tags": []
+}
