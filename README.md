@@ -16,26 +16,22 @@ This is a simple guide to get your **n8n AI Agent Application** up and running l
 ## **Installation & Setup**
 
 ### 1. Clone the repository
-```
-bash
-git clone <your-repo-url>
+```bash
+git clone git@github.com:Musthakeem98/Smart-AI-Chat.git
 ```
 
 ### 2. Navigate to the project directory
-```
-bash
-cd <your-repo-folder>
+```bash
+cd Smart-AI-Chat
 ```
 
 ### 3. Install dependencies
-```
-bash
+```bash
 npm install
 ```
 
 ### 4. Start n8n using Docker Compose
-```
-bash
+```bash
 docker compose up -d
 ```
 This will start n8n in a Docker container and expose it on **http://localhost:5678**.
@@ -45,8 +41,7 @@ This will start n8n in a Docker container and expose it on **http://localhost:56
 ## **Configure n8n**
 
 1. Open your browser and visit the n8n web interface:
-```
-text
+```text
 http://localhost:5678
 ```
 
@@ -73,14 +68,12 @@ http://localhost:5678
 ## **Tips**
 
 - You can stop the Docker containers anytime using:
-```
-bash
+```bash
 docker compose down
 ```
 
 - To view logs of n8n:
-```
-bash
+```bash
 docker compose logs -f
 ```
 
